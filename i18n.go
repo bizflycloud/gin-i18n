@@ -7,7 +7,7 @@ import (
 // newI18n ...
 func newI18n(opts ...Option) GinI18n {
 	// init ins
-	ins := &ginI18nImpl{}
+	ins := &GinI18nImpl{}
 
 	// set ins property from opts
 	for _, opt := range opts {
