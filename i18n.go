@@ -14,8 +14,8 @@ func NewI18n(opts ...Option) GinI18n {
 		opt(ins)
 	}
 
-	// 	if bundle isn't constructed then assign it from default
-	if ins.bundle == nil {
+	// 	if Bundle isn't constructed then assign it from default
+	if ins.Bundle == nil {
 		ins.SetBundle(defaultBundleConfig)
 	}
 

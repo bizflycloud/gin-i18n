@@ -14,16 +14,16 @@ import (
 var _ GinI18n = (*GinI18nImpl)(nil)
 
 type GinI18nImpl struct {
-	bundle          *i18n.Bundle
+	Bundle          *i18n.Bundle
 	currentContext  *gin.Context
-	localizerByLng  map[string]*i18n.Localizer
-	defaultLanguage language.Tag
+	LocalizerByLng  map[string]*i18n.Localizer
+	DefaultLanguage language.Tag
 	getLngHandler   GetLngHandler
 }
 
 // getMessage get localize message by lng and messageID
 func (i *GinI18nImpl) GetMessage(param interface{}) (string, error) {
-	lng := i.getLngHandler(i.currentContext, i.defaultLanguage.String())
+	lng := i.getLngHandler(i.currentContext, i.DefaultLanguage.String())
 	localizer := i.getLocalizerByLng(lng)
 
 	localizeConfig, err := i.getLocalizeConfig(param)
@@ -53,8 +53,8 @@ func (i *GinI18nImpl) SetBundle(cfg *BundleCfg) {
 	bundle := i18n.NewBundle(cfg.DefaultLanguage)
 	bundle.RegisterUnmarshalFunc(cfg.FormatBundleFile, cfg.UnmarshalFunc)
 
-	i.bundle = bundle
-	i.defaultLanguage = cfg.DefaultLanguage
+	i.Bundle = bundle
+	i.DefaultLanguage = cfg.DefaultLanguage
 
 	i.loadMessageFiles(cfg)
 	i.setLocalizerByLng(cfg.AcceptLanguage)
@@ -64,7 +64,7 @@ func (i *GinI18nImpl) SetGetLngHandler(handler GetLngHandler) {
 	i.getLngHandler = handler
 }
 
-// loadMessageFiles load all file localize to bundle
+// loadMessageFiles load all file localize to Bundle
 func (i *GinI18nImpl) loadMessageFiles(config *BundleCfg) {
 	for _, lng := range config.AcceptLanguage {
 		path := filepath.Join(config.RootPath, lng.String()) + "." + config.FormatBundleFile
@@ -80,7 +80,7 @@ func (i *GinI18nImpl) loadMessageFile(config *BundleCfg, path string) error {
 		return err
 	}
 
-	if _, err = i.bundle.ParseMessageFileBytes(buf, path); err != nil {
+	if _, err = i.Bundle.ParseMessageFileBytes(buf, path); err != nil {
 		return err
 	}
 	return nil
@@ -88,22 +88,22 @@ func (i *GinI18nImpl) loadMessageFile(config *BundleCfg, path string) error {
 
 // setLocalizerByLng set localizer by language
 func (i *GinI18nImpl) setLocalizerByLng(acceptLanguage []language.Tag) {
-	i.localizerByLng = map[string]*i18n.Localizer{}
+	i.LocalizerByLng = map[string]*i18n.Localizer{}
 	for _, lng := range acceptLanguage {
 		lngStr := lng.String()
-		i.localizerByLng[lngStr] = i.newLocalizer(lngStr)
+		i.LocalizerByLng[lngStr] = i.newLocalizer(lngStr)
 	}
 
-	// set defaultLanguage if it isn't exist
-	defaultLng := i.defaultLanguage.String()
-	if _, hasDefaultLng := i.localizerByLng[defaultLng]; !hasDefaultLng {
-		i.localizerByLng[defaultLng] = i.newLocalizer(defaultLng)
+	// set DefaultLanguage if it isn't exist
+	defaultLng := i.DefaultLanguage.String()
+	if _, hasDefaultLng := i.LocalizerByLng[defaultLng]; !hasDefaultLng {
+		i.LocalizerByLng[defaultLng] = i.newLocalizer(defaultLng)
 	}
 }
 
 // newLocalizer create a localizer by language
 func (i *GinI18nImpl) newLocalizer(lng string) *i18n.Localizer {
-	lngDefault := i.defaultLanguage.String()
+	lngDefault := i.DefaultLanguage.String()
 	lngs := []string{
 		lng,
 	}
@@ -113,7 +113,7 @@ func (i *GinI18nImpl) newLocalizer(lng string) *i18n.Localizer {
 	}
 
 	localizer := i18n.NewLocalizer(
-		i.bundle,
+		i.Bundle,
 		lngs...,
 	)
 	return localizer
@@ -121,12 +121,12 @@ func (i *GinI18nImpl) newLocalizer(lng string) *i18n.Localizer {
 
 // getLocalizerByLng get localizer by language
 func (i *GinI18nImpl) getLocalizerByLng(lng string) *i18n.Localizer {
-	localizer, hasValue := i.localizerByLng[lng]
+	localizer, hasValue := i.LocalizerByLng[lng]
 	if hasValue {
 		return localizer
 	}
 
-	return i.localizerByLng[i.defaultLanguage.String()]
+	return i.LocalizerByLng[i.DefaultLanguage.String()]
 }
 
 func (i *GinI18nImpl) getLocalizeConfig(param interface{}) (*i18n.LocalizeConfig, error) {
