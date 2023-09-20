@@ -4,8 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// newI18n ...
-func newI18n(opts ...Option) GinI18n {
+// NewI18n ...
+func NewI18n(opts ...Option) GinI18n {
 	// init ins
 	ins := &GinI18nImpl{}
 
@@ -29,7 +29,7 @@ func newI18n(opts ...Option) GinI18n {
 
 // Localize ...
 func Localize(opts ...Option) gin.HandlerFunc {
-	atI18n := newI18n(opts...)
+	atI18n := NewI18n(opts...)
 	return func(context *gin.Context) {
 		context.Set("i18n", atI18n)
 		atI18n.setCurrentContext(context)
