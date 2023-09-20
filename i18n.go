@@ -16,7 +16,7 @@ func NewI18n(opts ...Option) GinI18n {
 
 	// 	if bundle isn't constructed then assign it from default
 	if ins.bundle == nil {
-		ins.setBundle(defaultBundleConfig)
+		ins.SetBundle(defaultBundleConfig)
 	}
 
 	// if getLngHandler isn't constructed then assign it from default
@@ -32,7 +32,7 @@ func Localize(opts ...Option) gin.HandlerFunc {
 	atI18n := NewI18n(opts...)
 	return func(context *gin.Context) {
 		context.Set("i18n", atI18n)
-		atI18n.setCurrentContext(context)
+		atI18n.SetCurrentContext(context)
 	}
 }
 
@@ -51,7 +51,7 @@ GetMessage get the i18n message
 */
 func GetMessage(context *gin.Context, param interface{}) (string, error) {
 	atI18n := context.MustGet("i18n").(GinI18n)
-	return atI18n.getMessage(param)
+	return atI18n.GetMessage(param)
 }
 
 /*
@@ -69,5 +69,5 @@ MustGetMessage get the i18n message without error handling
 */
 func MustGetMessage(context *gin.Context, param interface{}) string {
 	atI18n := context.MustGet("i18n").(GinI18n)
-	return atI18n.mustGetMessage(param)
+	return atI18n.MustGetMessage(param)
 }
