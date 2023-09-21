@@ -22,7 +22,7 @@ type GinI18nImpl struct {
 }
 
 // getMessage get localize message by lng and messageID
-func (i *GinI18nImpl) getMessage(param interface{}) (string, error) {
+func (i *GinI18nImpl) GetMessage(param interface{}) (string, error) {
 	lng := i.getLngHandler(i.currentContext, i.defaultLanguage.String())
 	localizer := i.getLocalizerByLng(lng)
 
@@ -40,16 +40,16 @@ func (i *GinI18nImpl) getMessage(param interface{}) (string, error) {
 }
 
 // mustGetMessage ...
-func (i *GinI18nImpl) mustGetMessage(param interface{}) string {
-	message, _ := i.getMessage(param)
+func (i *GinI18nImpl) MustGetMessage(param interface{}) string {
+	message, _ := i.GetMessage(param)
 	return message
 }
 
-func (i *GinI18nImpl) setCurrentContext(ctx context.Context) {
+func (i *GinI18nImpl) SetCurrentContext(ctx context.Context) {
 	i.currentContext = ctx.(*gin.Context)
 }
 
-func (i *GinI18nImpl) setBundle(cfg *BundleCfg) {
+func (i *GinI18nImpl) SetBundle(cfg *BundleCfg) {
 	bundle := i18n.NewBundle(cfg.DefaultLanguage)
 	bundle.RegisterUnmarshalFunc(cfg.FormatBundleFile, cfg.UnmarshalFunc)
 
@@ -60,7 +60,7 @@ func (i *GinI18nImpl) setBundle(cfg *BundleCfg) {
 	i.setLocalizerByLng(cfg.AcceptLanguage)
 }
 
-func (i *GinI18nImpl) setGetLngHandler(handler GetLngHandler) {
+func (i *GinI18nImpl) SetGetLngHandler(handler GetLngHandler) {
 	i.getLngHandler = handler
 }
 

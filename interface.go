@@ -6,9 +6,9 @@ import (
 
 // GinI18n ...
 type GinI18n interface {
-	getMessage(param interface{}) (string, error)
-	mustGetMessage(param interface{}) string
-	setCurrentContext(ctx context.Context)
-	setBundle(cfg *BundleCfg)
-	setGetLngHandler(handler GetLngHandler)
+	GetMessage(param interface{}) (string, error)
+	MustGetMessage(param interface{}) string
+	SetCurrentContext(ctx context.Context)
+	SetBundle(cfg *BundleCfg)
+	SetGetLngHandler(handler GetLngHandler)
 }

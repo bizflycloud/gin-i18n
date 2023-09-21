@@ -29,13 +29,13 @@ func WithBundle(config *BundleCfg) Option {
 		if config.Loader == nil {
 			config.Loader = defaultLoader
 		}
-		g.setBundle(config)
+		g.SetBundle(config)
 	}
 }
 
 // WithGetLngHandle ...
 func WithGetLngHandle(handler GetLngHandler) Option {
 	return func(g GinI18n) {
-		g.setGetLngHandler(handler)
+		g.SetGetLngHandler(handler)
 	}
 }
