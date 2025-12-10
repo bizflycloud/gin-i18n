@@ -29,10 +29,10 @@ func newI18n(opts ...Option) GinI18n {
 
 // Localize ...
 func Localize(opts ...Option) gin.HandlerFunc {
-	atI18n := newI18n(opts...)
 	return func(context *gin.Context) {
-		context.Set("i18n", atI18n)
+		atI18n := newI18n(opts...)
 		atI18n.setCurrentContext(context)
+		context.Set("i18n", atI18n)
 	}
 }
 
