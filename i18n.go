@@ -51,7 +51,7 @@ func Localize(opts ...Option) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		newAtI18n := CloneGinI18n(atI18n)
 		newAtI18n.SetCurrentContext(context)
-		context.Set("i18n", atI18n)
+		context.Set("i18n", newAtI18n)
 	}
 }
 
