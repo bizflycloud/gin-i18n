@@ -27,12 +27,31 @@ func NewI18n(opts ...Option) GinI18n {
 	return ins
 }
 
+func CloneGinI18n(ins GinI18n) GinI18n {
+	if ins == nil {
+		return nil
+	}
+	castedIns, ok := ins.(*GinI18nImpl)
+	if !ok {
+		return ins
+	}
+	newIns := &GinI18nImpl{
+		bundle:          castedIns.bundle,
+		currentContext:  castedIns.currentContext,
+		localizerByLng:  castedIns.localizerByLng,
+		defaultLanguage: castedIns.defaultLanguage,
+		getLngHandler:   castedIns.getLngHandler,
+	}
+	return newIns
+}
+
 // Localize ...
 func Localize(opts ...Option) gin.HandlerFunc {
 	atI18n := NewI18n(opts...)
 	return func(context *gin.Context) {
+		newAtI18n := CloneGinI18n(atI18n)
+		newAtI18n.SetCurrentContext(context)
 		context.Set("i18n", atI18n)
-		atI18n.SetCurrentContext(context)
 	}
 }
 
