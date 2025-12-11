@@ -11,9 +11,9 @@ import (
 	"golang.org/x/text/language"
 )
 
-var _ GinI18n = (*ginI18nImpl)(nil)
+var _ GinI18n = (*GinI18nImpl)(nil)
 
-type ginI18nImpl struct {
+type GinI18nImpl struct {
 	bundle          *i18n.Bundle
 	currentContext  *gin.Context
 	localizerByLng  map[string]*i18n.Localizer
@@ -22,7 +22,7 @@ type ginI18nImpl struct {
 }
 
 // getMessage get localize message by lng and messageID
-func (i *ginI18nImpl) getMessage(param interface{}) (string, error) {
+func (i *GinI18nImpl) GetMessage(param interface{}) (string, error) {
 	lng := i.getLngHandler(i.currentContext, i.defaultLanguage.String())
 	localizer := i.getLocalizerByLng(lng)
 
@@ -40,16 +40,16 @@ func (i *ginI18nImpl) getMessage(param interface{}) (string, error) {
 }
 
 // mustGetMessage ...
-func (i *ginI18nImpl) mustGetMessage(param interface{}) string {
-	message, _ := i.getMessage(param)
+func (i *GinI18nImpl) MustGetMessage(param interface{}) string {
+	message, _ := i.GetMessage(param)
 	return message
 }
 
-func (i *ginI18nImpl) setCurrentContext(ctx context.Context) {
+func (i *GinI18nImpl) SetCurrentContext(ctx context.Context) {
 	i.currentContext = ctx.(*gin.Context)
 }
 
-func (i *ginI18nImpl) setBundle(cfg *BundleCfg) {
+func (i *GinI18nImpl) SetBundle(cfg *BundleCfg) {
 	bundle := i18n.NewBundle(cfg.DefaultLanguage)
 	bundle.RegisterUnmarshalFunc(cfg.FormatBundleFile, cfg.UnmarshalFunc)
 
@@ -60,12 +60,12 @@ func (i *ginI18nImpl) setBundle(cfg *BundleCfg) {
 	i.setLocalizerByLng(cfg.AcceptLanguage)
 }
 
-func (i *ginI18nImpl) setGetLngHandler(handler GetLngHandler) {
+func (i *GinI18nImpl) SetGetLngHandler(handler GetLngHandler) {
 	i.getLngHandler = handler
 }
 
 // loadMessageFiles load all file localize to bundle
-func (i *ginI18nImpl) loadMessageFiles(config *BundleCfg) {
+func (i *GinI18nImpl) loadMessageFiles(config *BundleCfg) {
 	for _, lng := range config.AcceptLanguage {
 		path := filepath.Join(config.RootPath, lng.String()) + "." + config.FormatBundleFile
 		if err := i.loadMessageFile(config, path); err != nil {
@@ -74,7 +74,7 @@ func (i *ginI18nImpl) loadMessageFiles(config *BundleCfg) {
 	}
 }
 
-func (i *ginI18nImpl) loadMessageFile(config *BundleCfg, path string) error {
+func (i *GinI18nImpl) loadMessageFile(config *BundleCfg, path string) error {
 	buf, err := config.Loader.LoadMessage(path)
 	if err != nil {
 		return err
@@ -87,7 +87,7 @@ func (i *ginI18nImpl) loadMessageFile(config *BundleCfg, path string) error {
 }
 
 // setLocalizerByLng set localizer by language
-func (i *ginI18nImpl) setLocalizerByLng(acceptLanguage []language.Tag) {
+func (i *GinI18nImpl) setLocalizerByLng(acceptLanguage []language.Tag) {
 	i.localizerByLng = map[string]*i18n.Localizer{}
 	for _, lng := range acceptLanguage {
 		lngStr := lng.String()
@@ -102,7 +102,7 @@ func (i *ginI18nImpl) setLocalizerByLng(acceptLanguage []language.Tag) {
 }
 
 // newLocalizer create a localizer by language
-func (i *ginI18nImpl) newLocalizer(lng string) *i18n.Localizer {
+func (i *GinI18nImpl) newLocalizer(lng string) *i18n.Localizer {
 	lngDefault := i.defaultLanguage.String()
 	lngs := []string{
 		lng,
@@ -120,7 +120,7 @@ func (i *ginI18nImpl) newLocalizer(lng string) *i18n.Localizer {
 }
 
 // getLocalizerByLng get localizer by language
-func (i *ginI18nImpl) getLocalizerByLng(lng string) *i18n.Localizer {
+func (i *GinI18nImpl) getLocalizerByLng(lng string) *i18n.Localizer {
 	localizer, hasValue := i.localizerByLng[lng]
 	if hasValue {
 		return localizer
@@ -129,7 +129,7 @@ func (i *ginI18nImpl) getLocalizerByLng(lng string) *i18n.Localizer {
 	return i.localizerByLng[i.defaultLanguage.String()]
 }
 
-func (i *ginI18nImpl) getLocalizeConfig(param interface{}) (*i18n.LocalizeConfig, error) {
+func (i *GinI18nImpl) getLocalizeConfig(param interface{}) (*i18n.LocalizeConfig, error) {
 	switch paramValue := param.(type) {
 	case string:
 		localizeConfig := &i18n.LocalizeConfig{

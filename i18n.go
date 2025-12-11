@@ -4,10 +4,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// newI18n ...
-func newI18n(opts ...Option) GinI18n {
+// NewI18n ...
+func NewI18n(opts ...Option) GinI18n {
 	// init ins
-	ins := &ginI18nImpl{}
+	ins := &GinI18nImpl{}
 
 	// set ins property from opts
 	for _, opt := range opts {
@@ -16,7 +16,7 @@ func newI18n(opts ...Option) GinI18n {
 
 	// 	if bundle isn't constructed then assign it from default
 	if ins.bundle == nil {
-		ins.setBundle(defaultBundleConfig)
+		ins.SetBundle(defaultBundleConfig)
 	}
 
 	// if getLngHandler isn't constructed then assign it from default
@@ -27,12 +27,31 @@ func newI18n(opts ...Option) GinI18n {
 	return ins
 }
 
+func CloneGinI18n(ins GinI18n) GinI18n {
+	if ins == nil {
+		return nil
+	}
+	castedIns, ok := ins.(*GinI18nImpl)
+	if !ok {
+		return ins
+	}
+	newIns := &GinI18nImpl{
+		bundle:          castedIns.bundle,
+		currentContext:  castedIns.currentContext,
+		localizerByLng:  castedIns.localizerByLng,
+		defaultLanguage: castedIns.defaultLanguage,
+		getLngHandler:   castedIns.getLngHandler,
+	}
+	return newIns
+}
+
 // Localize ...
 func Localize(opts ...Option) gin.HandlerFunc {
-	atI18n := newI18n(opts...)
+	atI18n := NewI18n(opts...)
 	return func(context *gin.Context) {
-		context.Set("i18n", atI18n)
-		atI18n.setCurrentContext(context)
+		newAtI18n := CloneGinI18n(atI18n)
+		newAtI18n.SetCurrentContext(context)
+		context.Set("i18n", newAtI18n)
 	}
 }
 
@@ -51,7 +70,7 @@ GetMessage get the i18n message
 */
 func GetMessage(context *gin.Context, param interface{}) (string, error) {
 	atI18n := context.MustGet("i18n").(GinI18n)
-	return atI18n.getMessage(param)
+	return atI18n.GetMessage(param)
 }
 
 /*
@@ -69,5 +88,5 @@ MustGetMessage get the i18n message without error handling
 */
 func MustGetMessage(context *gin.Context, param interface{}) string {
 	atI18n := context.MustGet("i18n").(GinI18n)
-	return atI18n.mustGetMessage(param)
+	return atI18n.MustGetMessage(param)
 }
